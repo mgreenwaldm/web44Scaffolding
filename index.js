@@ -5,7 +5,6 @@ const db = require('./api/data/db-config')
 const port = process.env.PORT || 3000
 
 async function start() {
-  await db.migrate.rollback()
   await db.migrate.latest()
 
   server.listen(port, () => {
