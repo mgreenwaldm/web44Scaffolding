@@ -1,17 +1,34 @@
-// const db = require("../../data/db-config");
-//
-// module.exports = {
-//     insertUser,
-//     getAllUsers
-// };
-//
-// async function insertUser(user) {
-//     // WITH POSTGRES WE CAN PASS A "RETURNING ARRAY" AS 2ND ARGUMENT TO knex.insert/update
-//     // AND OBTAIN WHATEVER COLUMNS WE NEED FROM THE NEWLY CREATED/UPDATED RECORD
-//     // UNLIKE SQLITE WHICH FORCES US DO DO A 2ND DB CALL
-//     const [newUserObject] = await db('users').insert(user, ['user_id', 'username', 'password'])
-//     return newUserObject // { user_id: 7, username: 'foo', password: 'xxxxxxx' }
-// }
-//
-// function getAllUsers() {
-//     return db('users')
+const db = require("../../data/db-config");
+
+module.exports = {
+    insert,
+    getMySchedule,
+    getMyScheduleById,
+    remove
+};
+
+async function insert(schedule) {
+    const [newSchedule] = await db('schedules').insert(schedule, '*')
+    return newSchedule
+}
+
+async function remove(scheduleId) {
+    await db('schedules').where('schedule_id', '=', scheduleId).del()
+}
+
+async function getMySchedule(userId) {
+    return db("schedules as s")
+        .join('classes as c', 'c.class_id', '=', 's.class_id')
+        .join('users as u', 'u.user_id', '=',  'c.instructor_id')
+        .select('s.*', 'c.*', 'u.username as instructor')
+        .where('s.user_id', userId);
+}
+
+async function getMyScheduleById(scheduleId) {
+    return db("schedules as s")
+        .join('classes as c', 'c.class_id', '=', 's.class_id')
+        .join('users as u', 'u.user_id', '=',  'c.instructor_id')
+        .select('s.*', 'c.*', 'u.username as instructor')
+        .where('s.schedule_id', scheduleId)
+        .first();
+}

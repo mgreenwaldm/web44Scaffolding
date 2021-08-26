@@ -8,10 +8,12 @@ const validateToken = async function (req, res, next) {
     }
 
     try {
-        await helper.verifyJwt(authToken);
+        const decoded = await helper.verifyJwt(authToken);
+        req.body.user_id = decoded.user_id;
     } catch (err) {
         return res.status(401).send('token invalid')
     }
+
     next();
 };
 

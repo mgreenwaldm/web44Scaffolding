@@ -22,6 +22,14 @@ const validateCreateClass = function (req, res, next) {
         return res.status(400).send('max_attendees is required');
     }
 
+    if (_.isNil(req.body.duration_minutes)) {
+        return res.status(400).send('duration_minutes is required');
+    }
+
+    if (_.isNil(req.body.type)) {
+        return res.status(400).send('type is required');
+    }
+
     next()
 }
 

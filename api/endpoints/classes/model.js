@@ -29,9 +29,17 @@ async function getAllClassesWithInstructor() {
 }
 
 async function getClassesWithInstructorById(classId) {
-    return db("classes as c")
+    const details = await db("classes as c")
         .join('users', 'c.instructor_id', '=', 'users.user_id')
         .select('users.username as instructor', 'c.*')
         .where('c.class_id', classId)
         .first();
+
+    const attendees = await db("schedules as s")
+        .count('user_id')
+        .where('class_id', '=', classId)
+        .first();
+
+    details.attendees = attendees.count;
+    return details;
 }
