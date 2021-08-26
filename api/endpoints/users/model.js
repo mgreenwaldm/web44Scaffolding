@@ -1,18 +1,16 @@
 const db = require("../../data/db-config");
 
 module.exports = {
-    insertUser,
-    getAllUsers
+    insert,
+    getByUsername
 };
 
-async function insertUser(user) {
-    // WITH POSTGRES WE CAN PASS A "RETURNING ARRAY" AS 2ND ARGUMENT TO knex.insert/update
-    // AND OBTAIN WHATEVER COLUMNS WE NEED FROM THE NEWLY CREATED/UPDATED RECORD
-    // UNLIKE SQLITE WHICH FORCES US DO DO A 2ND DB CALL
-    const [newUserObject] = await db('users').insert(user, ['user_id', 'username', 'password'])
-    return newUserObject // { user_id: 7, username: 'foo', password: 'xxxxxxx' }
+async function insert(user) {
+    const [newUserObject] = await db('users').insert(user, ['user_id', 'username', 'password', 'is_instructor'])
+    return newUserObject
 }
 
-function getAllUsers() {
-    return db('users')
+async function getByUsername(username) {
+    let query = db("users as u");
+    return query.where("u.username", username).first();
 }
